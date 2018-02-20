@@ -8,8 +8,8 @@ pub enum MatrixError {
 
 #[derive(Debug)]
 pub struct Size {
-    r: usize,
-    c: usize,
+    pub r: usize,
+    pub c: usize,
 }
 
 impl Size {

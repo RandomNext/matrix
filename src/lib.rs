@@ -8,6 +8,7 @@ use types::{MatrixError, Size};
 pub struct Matrix {
     content: Vec<Vec<u32>>,
     size: Size,
+    largest_digit_n: Vec<usize>,
 }
 
 
@@ -22,21 +23,33 @@ impl Matrix {
             false => return Err(MatrixError::InconsistentRowSize),
         }
         let row_n = from.len();
+        let mut largest_digit_n = vec![0; expected_col_n];
+        for row in &from {
+            for i in 0..(expected_col_n) {
+                if row[i].to_string().len() > largest_digit_n[i] {
+                    largest_digit_n[i] = row[i].to_string().len();
+                }
+            }
+        }
 
         Ok(Matrix {
             content: from,
             size: Size::new(row_n, expected_col_n),
+            largest_digit_n,
         })
     }
 }
 
 impl fmt::Display for Matrix {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let mut str_represent = String::new();
         for row in self.content.iter() {
-            str_represent.push_str(&format!("|{} |\n", row.iter().fold(String::new(), |cced, val| cced + " " + &val.to_string())));
+            write!(f, "|")?;
+            for i in 0..row.len() {
+                write!(f, " {number:>width$}", number=row[i], width=self.largest_digit_n[i])?;
+            }
+            write!(f, " |\n")?;
         }
-        write!(f, "{}", str_represent)
+        Ok(())
     }
 }
 
@@ -44,4 +57,12 @@ impl PartialEq for Matrix {
     fn eq(&self, other: &Self) -> bool {
         self.content == other.content
     }
+}
+
+
+#[test]
+fn test () {
+
+    println!("{}", Matrix::new(vec![vec![3, 5, 6453], vec![34, 453, 3]]).unwrap());
+    assert!(true);
 }
