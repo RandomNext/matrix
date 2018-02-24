@@ -37,3 +37,14 @@ fn inconsistent_multiple_row() {
     assert_eq!(format!("{}", m.unwrap()), "| 1 222 3 |\n| 1   2 3 |\n");
 }
 
+#[test]
+fn negative_numbers() {
+    let m = Matrix::new(vec![
+                            vec![-23, 3525, 234, 1],
+                            vec![34, -21, -123, -324],
+    ]);
+    assert_eq!(format!("{}", m.unwrap()),
+"| -23 3525  234    1 |
+|  34  -21 -123 -324 |
+")
+}

@@ -1,18 +1,19 @@
 use std::fmt;
+use std::string::ToString;
 
 pub mod types;
 
-use types::{MatrixError, Size};
+use types::{MatrixError, Size, Int};
 
 #[derive(Debug)]
-pub struct Matrix {
-    content: Vec<Vec<u32>>,
+pub struct Matrix<T: Int> {
+    content: Vec<Vec<T>>,
     size: Size,
     largest_digit_n: Vec<usize>,
 }
 
-impl Matrix {
-    pub fn new(from: Vec<Vec<u32>>) -> Result<Self, MatrixError> {
+impl<T: Int + ToString + Copy + Ord> Matrix<T> {
+    pub fn new(from: Vec<Vec<T>>) -> Result<Self, MatrixError> {
         if from.is_empty() || from[0].is_empty() {
             return Err(MatrixError::EmptyMatrix);
         }
@@ -24,9 +25,9 @@ impl Matrix {
         let row_n = from.len();
         let mut largest_digit_n = vec![0; expected_col_n];
         for i in 0..(expected_col_n) {
-            let mut max_col_v = 0;
-            for row in &from {
-                max_col_v = row[i].max(max_col_v)
+            let mut max_col_v = from[0][0];
+            for row in &from { // TODO: Would be great to skip first item [line above]
+                max_col_v = row[i].positive_repr().max(max_col_v);
             }
             largest_digit_n[i] = max_col_v.to_string().len();
         }
@@ -39,7 +40,7 @@ impl Matrix {
     }
 }
 
-impl fmt::Display for Matrix {
+impl<T: Int + fmt::Display> fmt::Display for Matrix<T> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         for row in self.content.iter() {
             write!(f, "|")?;
@@ -57,7 +58,7 @@ impl fmt::Display for Matrix {
     }
 }
 
-impl PartialEq for Matrix {
+impl<T: Int + PartialEq> PartialEq for Matrix<T> {
     fn eq(&self, other: &Self) -> bool {
         self.content == other.content
     }
