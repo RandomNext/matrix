@@ -1,5 +1,6 @@
 use std::fmt;
 use std::string::ToString;
+use std::ops::{Add};
 
 pub mod types;
 
@@ -37,6 +38,21 @@ impl<T: Int + ToString + Copy + Ord> Matrix<T> {
             size: Size::new(row_n, expected_col_n),
             largest_digit_n,
         })
+    }
+}
+
+impl<T: Int + Add<Output=T> + Copy> Add for Matrix<T> {
+    type Output = Result<Self, MatrixError>;
+    fn add(mut self, rhs: Self) -> Self::Output {
+        if self.size != rhs.size {
+            return Err(MatrixError::DifferentSize);
+        }
+        for (i, row) in rhs.content.iter().enumerate() {
+            for (j, value) in row.iter().enumerate() {
+                self.content[i][j] = self.content[i][j] + *value;
+            }
+        }
+        Ok(self)
     }
 }
 

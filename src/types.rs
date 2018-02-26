@@ -29,9 +29,10 @@ impl_signed_int!(i64 i32 i16 i8);
 pub enum MatrixError {
     EmptyMatrix,
     InconsistentRowSize,
+    DifferentSize,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Size {
     pub r: usize,
     pub c: usize,
